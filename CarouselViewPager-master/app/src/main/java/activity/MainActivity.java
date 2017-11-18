@@ -4,19 +4,15 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
+import android.view.animation.Animation;
 import android.widget.MediaController;
 import android.widget.Toast;
 import android.widget.VideoView;
-
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import carousel.CarouselAdapter;
 import carousel.CarouselViewPager;
@@ -50,17 +46,18 @@ public class MainActivity extends AppCompatActivity {
         this.carousel = (CarouselViewPager) findViewById(R.id.carousel);
         ArrayList<MediaEntity> entities = buildData();
 
-        CarouselAdapter carouselAdapter = new CarouselAdapter(this, this.carousel, getSupportFragmentManager(), entities);
-        this.carousel.setAdapter(carouselAdapter);
-        this.carousel.addOnPageChangeListener(carouselAdapter);
-        this.carousel.setOffscreenPageLimit(entities.size());
-        this.carousel.setClipToPadding(false);
-        this.carousel.setScrollDurationFactor(1.5d);
-        this.carousel.setPageWidth(0.55f);
-        this.carousel.settPaddingBetweenItem(16);
-        this.carousel.setAlpha(0.0f);
-        this.carousel.setAlpha(CarouselAdapter.BIG_SCALE);
-        Toast.makeText(this, entities.toString(), Toast.LENGTH_LONG).show();
+        carousel = (CarouselViewPager) findViewById(R.id.carousel);
+        CarouselAdapter carouselAdapter = new CarouselAdapter(this, carousel, getSupportFragmentManager(), entities);
+
+        carousel.setAdapter(carouselAdapter);
+        carousel.addOnPageChangeListener(carouselAdapter);
+        carousel.setOffscreenPageLimit(entities.size());
+        carousel.setClipToPadding(false);
+
+        carousel.setScrollDurationFactor(1.5f);
+        carousel.setPageWidth(0.55f);
+        carousel.settPaddingBetweenItem(16);
+        carousel.setAlpha(0.0f);
 
         if (this.file_background.isFile()) {
             findViewById(R.id.mainContainer).setBackground(Drawable.createFromPath(this.file_background.getAbsolutePath()));
@@ -84,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
                 String str = readFile(file);
                 if (isJSONValid(str)) {
                     JSONArray array = new JSONObject(str).getJSONArray("media");
-                    List<String> list = new ArrayList();
                     for (int i = 0; i < array.length(); i++) {
                         String name = array.getJSONObject(i).getString("name");
                         String image = array.getJSONObject(i).getString("image");
@@ -103,49 +99,52 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, "JSON file not created at :" + file.getAbsolutePath().toString(), Toast.LENGTH_LONG).show();
     }
 
-    public boolean checkMediaValues() {
-        return true;
-    }
-
     public boolean isJSONValid(String test) {
         try {
             JSONObject jSONObject = new JSONObject(test);
-        } catch (JSONException e) {
-            try {
-                JSONArray jSONArray = new JSONArray(test);
-            } catch (JSONException e2) {
-                return false;
-            }
+        } catch (Exception e) {
+            return false;
         }
         return true;
     }
 
-    public String readFile(File file) throws IOException {
-        String line = null;
-
+    public String readFile(File file) {
+        String content = null;
+        FileReader reader = null;
         try {
-
-            BufferedReader bufferreader = new BufferedReader(new FileReader(file));
-            line = bufferreader.readLine();
-
-            while (line != null) {
-                //do whatever here
-                line = bufferreader.readLine();
-            }
-
-        } catch (FileNotFoundException ex) {
-            Toast.makeText(this, ex.getMessage(), Toast.LENGTH_LONG).show();
-            ex.printStackTrace();
-        } catch (IOException ex) {
-            Toast.makeText(this, ex.getMessage(), Toast.LENGTH_LONG).show();
+            reader = new FileReader(file);
+            char[] chars = new char[(int) file.length()];
+            reader.read(chars);
+            content = new String(chars);
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return line;
+        return content;
     }
 
     public ArrayList<MediaEntity> buildData() {
         return this.mediaEntities;
     }
 
+    @Override
+    public void onWindowFocusChanged (boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            carousel.startAnimation(false, new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                    carousel.setAlpha(1.0f);
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) { }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) { }
+            });
+        }
+    }
 
     public static VideoView getVideoView() {
         return videoView;

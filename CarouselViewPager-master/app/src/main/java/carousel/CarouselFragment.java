@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +13,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.VideoView;
 
+import activity.MainActivity;
 import activity.R;
 import objects.MediaEntity;
 
@@ -41,14 +42,18 @@ public class CarouselFragment extends Fragment {
         root.setTag("view" + getArguments().getInt("position"));
         computePadding(root);
 
+        final VideoView videoView = (VideoView) getActivity().findViewById(R.id.videoView);
         ImageView imageView = (ImageView) root.findViewById(R.id.image);
         imageView.setImageDrawable(Drawable.createFromPath(getArguments().getString("image")));
-
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 CarouselViewPager carousel = (CarouselViewPager) getActivity().findViewById(R.id.carousel);
                 carousel.setCurrentItem(getArguments().getInt("position"), true);
+                videoView.stopPlayback();
+                videoView.setVideoPath(getArguments().getString("video"));
+                videoView.start();
+
             }
         });
 

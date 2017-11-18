@@ -10,4 +10,22 @@ public class Entity {
         this.titleRes = titleRes;
         this.description = description;
     }
+
+    public int getImage() {
+        return this.imageRes;
+    }
+
+    public void setImage(int image) {
+        this.imageRes = image;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+
 }
