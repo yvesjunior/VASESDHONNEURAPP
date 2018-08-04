@@ -61,6 +61,8 @@ public class CarouselFragment extends Fragment {
             carousel.setCurrentItem(getArguments().getInt("position"), true);
             if(new File(getArguments().getString("video")).isFile()){
 
+                //show video and description
+                getActivity().findViewById(R.id.video_layout).setVisibility(View.VISIBLE);
                 videoView.setVideoURI(Uri.fromFile(new File(getArguments().getString("video"))));
 
                 getActivity().runOnUiThread(new Runnable() {

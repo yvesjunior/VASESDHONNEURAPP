@@ -17,7 +17,7 @@
             android:layout_height="match_parent"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:scaleType="centerCrop" />
+            android:scaleType="fitXY" />
 
         <RelativeLayout
             android:id="@+id/description_layout"

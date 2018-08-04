@@ -24,25 +24,45 @@
             android:id="@+id/carousel"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.7"
+            android:layout_weight="0.6"
             android:layout_gravity="center"
             android:overScrollMode="never" />
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.02" />
+            android:layout_weight="0.09" />
 
-        <VideoView
-            android:id="@+id/videoView"
+        <RelativeLayout
+            android:id="@+id/video_layout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.7"
-            android:layout_margin="20dp"/>
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.02" />
+            android:background="@color/white"
+            android:layout_margin="10dp"
+            android:visibility="invisible">
+
+            <VideoView
+                android:id="@+id/videoView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.02"
+                android:background="@color/dirtyWhite"
+                android:textColor="@color/black"
+                android:layout_alignParentBottom="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:paddingBottom="30dp"
+                android:paddingTop="25dp"
+                android:textSize="21dp"
+                android:textAllCaps="true"
+                android:text="Description video***************************"/>
+        </RelativeLayout>
+
 
     </LinearLayout>
 
