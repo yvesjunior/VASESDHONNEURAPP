@@ -2,6 +2,8 @@ package carousel;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -11,17 +13,22 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.MediaController;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.VideoView;
+
+import java.io.File;
 
 import activity.MainActivity;
 import activity.R;
 import objects.MediaEntity;
 
 public class CarouselFragment extends Fragment {
+    public static Context _context;
     public static Fragment newInstance(Context context, MediaEntity entity, int position, float scale) {
         Bundle b = new Bundle();
+        _context= context;
         b.putString("image", entity.getImage());
         b.putString("video", entity.getVideo());
         b.putInt("position", position);
@@ -48,12 +55,30 @@ public class CarouselFragment extends Fragment {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CarouselViewPager carousel = (CarouselViewPager) getActivity().findViewById(R.id.carousel);
-                carousel.setCurrentItem(getArguments().getInt("position"), true);
-                videoView.stopPlayback();
-                videoView.setVideoPath(getArguments().getString("video"));
-                videoView.start();
+            videoView.stopPlayback();
 
+            CarouselViewPager carousel = (CarouselViewPager) getActivity().findViewById(R.id.carousel);
+            carousel.setCurrentItem(getArguments().getInt("position"), true);
+            if(new File(getArguments().getString("video")).isFile()){
+
+                videoView.setVideoURI(Uri.fromFile(new File(getArguments().getString("video"))));
+
+                getActivity().runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+
+                        videoView.requestFocus();
+                        videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+
+                            public void onPrepared(MediaPlayer mediaPlayer) {
+                                videoView.start();
+                                MainActivity.mediaController.show(100000000);
+                            }
+                        });
+                    }
+                });
+            }
             }
         });
 
@@ -121,10 +146,20 @@ public class CarouselFragment extends Fragment {
     }
 
     private void opacityAnimation(final View view, float fromAlpha, float toAlpha, int duration, boolean keepResult, Animation.AnimationListener listener){
-        Animation alphaAnimation = new AlphaAnimation(fromAlpha, toAlpha);
+        final Animation alphaAnimation = new AlphaAnimation(fromAlpha, toAlpha);
         if(keepResult) alphaAnimation.setFillAfter(true);
         alphaAnimation.setDuration(duration);
         alphaAnimation.setAnimationListener(listener);
-        view.startAnimation(alphaAnimation);
+
+
+       // getActivity().runOnUiThread(new Runnable() {
+
+           // @Override
+           // public void run() {
+                view.startAnimation(alphaAnimation);
+          //  }
+        //});
+
+
     }
 }

@@ -33,6 +33,7 @@ public class ScrollToAnimation extends Animation {
     protected void applyTransformation(float interpolatedTime, Transformation t) {
         super.applyTransformation(interpolatedTime, t);
 
+
         int offset = (beginAnimation) ? (int) (-toX * interpolatedTime) : (int) (-fromX * interpolatedTime + fromX);
 
         if(!beginAnimation) {

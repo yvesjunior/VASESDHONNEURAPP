@@ -31,13 +31,17 @@ public class CarouselAdapter extends FragmentPagerAdapter implements OnPageChang
         this.entities = mData;
     }
 
-    public Fragment getItem(int position) {
+    public Fragment getItem(int position){
         if (position == 0) {
             this.scale = BIG_SCALE;
         } else {
             this.scale = SMALL_SCALE;
         }
-        return CarouselFragment.newInstance(this.context, (MediaEntity) this.entities.get(position), position, this.scale);
+        try {
+            return CarouselFragment.newInstance(this.context, (MediaEntity) this.entities.get(position), position, this.scale);
+        }catch (Exception e){
+            return CarouselFragment.newInstance(this.context, (MediaEntity) this.entities.get(0), 0, this.scale);
+        }
     }
 
     public int getItemPosition(Object object) {
@@ -51,10 +55,14 @@ public class CarouselAdapter extends FragmentPagerAdapter implements OnPageChang
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
         if (positionOffset >= 0.0f && positionOffset <= BIG_SCALE) {
             this.cur = getRootView(position);
-            this.cur.setScaleBoth(BIG_SCALE - (DIFF_SCALE * positionOffset));
-            if (position < this.entities.size() - 1) {
-                this.next = getRootView(position + 1);
-                this.next.setScaleBoth(SMALL_SCALE + (DIFF_SCALE * positionOffset));
+            try {
+                this.cur.setScaleBoth(BIG_SCALE - (DIFF_SCALE * positionOffset));
+                if (position < this.entities.size() - 1) {
+                    this.next = getRootView(position + 1);
+                    this.next.setScaleBoth(SMALL_SCALE + (DIFF_SCALE * positionOffset));
+                }
+            }catch (Exception e){
+                e.printStackTrace();
             }
         }
     }
@@ -71,7 +79,14 @@ public class CarouselAdapter extends FragmentPagerAdapter implements OnPageChang
     }
 
     private ScaledFrameLayout getRootView(int position) {
-        return (ScaledFrameLayout) this.fragmentManager.findFragmentByTag(getFragmentTag(position)).getView().findViewById(R.id.rootItem);
+        ScaledFrameLayout res = null;
+        try {
+            res= (ScaledFrameLayout) this.fragmentManager.findFragmentByTag(getFragmentTag(position)).getView().findViewById(R.id.rootItem);
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            return res;
+        }
     }
 
     private String getFragmentTag(int position) {

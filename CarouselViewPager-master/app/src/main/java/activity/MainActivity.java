@@ -4,6 +4,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.animation.Animation;
 import android.widget.MediaController;
 import android.widget.Toast;
@@ -28,10 +30,9 @@ public class MainActivity extends AppCompatActivity {
     File file_VIDEO = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "VHO/VIDEOS");
     File file_background = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "VHO/background.jpg");
     File file_media = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "VHO/media.json");
-    private MediaController mediaController;
+    public static MediaController mediaController;
     public ArrayList<MediaEntity> mediaEntities = new ArrayList();
-    int v_height;
-    int v_width;
+
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,10 +40,24 @@ public class MainActivity extends AppCompatActivity {
         getMedia();
         videoView = (VideoView) findViewById(R.id.videoView);
         if (this.mediaController == null) {
-            this.mediaController = new MediaController(this);
-            this.mediaController.setAnchorView(videoView);
-            videoView.setMediaController(this.mediaController);
+            mediaController = new MediaController(MainActivity.this);
+            mediaController.setAnchorView(videoView);
+            //videoView.setMediaController(mediaController);
+            mediaController.setMediaPlayer(videoView);
         }
+        videoView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                return true;
+            }
+        });
+        videoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                return;
+            }
+        });
+
         this.carousel = (CarouselViewPager) findViewById(R.id.carousel);
         ArrayList<MediaEntity> entities = buildData();
 
@@ -110,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
 
     public String readFile(File file) {
         String content = null;
-        FileReader reader = null;
+        FileReader reader;
         try {
             reader = new FileReader(file);
             char[] chars = new char[(int) file.length()];
